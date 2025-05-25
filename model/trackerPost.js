@@ -11,10 +11,10 @@ const trackerPostSchema = new mongoose.Schema({
     content: {type: String,
             required: true,
     },
-    dateManual: {type: String,
+    date: {type: String,
             required: true,
     },
-    date: { type: Date, default: Date.now }
+    dateNow: { type: Date, default: Date.now }
 })
 
 

@@ -1,5 +1,5 @@
 const trackerPost = require('../model/trackerPost');
-const TrackerPost = require('../model/trackerPost');
+
 
 exports.createPost = async (req,res) => {
     const {dateManual , content , title, author} = req.body;
@@ -15,5 +15,15 @@ exports.createPost = async (req,res) => {
         res.status(201).json({ success: true, post: newActivity });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+
+exports.getAllTrackerPosts = async (req,res) => {
+    try{
+       const trackerPosts = await trackerPost.find();
+       res.status(200).json({success: true, post: trackerPosts});
+    }catch (error) {
+        res.status(500).json({success: false, message: error.message});
     }
 }

@@ -19,3 +19,13 @@ exports.createPost = async (req,res) => {
     }
 
 }
+
+
+exports.getAllPosts = async (req,res) => {
+  try {
+    const posts = await blogPost.find();
+    res.status(200).json({success: true, post: posts});
+  } catch (error){
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
