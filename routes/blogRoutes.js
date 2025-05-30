@@ -6,5 +6,8 @@ const router =express.Router();
 router.post("/create-post", blogController.createPost);
 router.get("/get-all-posts" , blogController.getAllPosts);
 router.get("/post/:id" , blogController.getSinglePost);
-
+router.put("/update-summary/:id", blogController.updateSummaryPost);
 module.exports = router
+
+
+//updated

@@ -15,6 +15,17 @@ const postSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
       author: { type: String, default: "Naman Sharma" },
 
+      summaryBool: {
+        type: Boolean,
+        default: false,
+      },
+
+      summaryData: {
+        type: String,
+        required: false,
+      }
+    
+
 });
 
 
