@@ -11,3 +11,4 @@ module.exports = router
 
 
 //updated
+// sudo chown -R $(whoami) . djdsj
