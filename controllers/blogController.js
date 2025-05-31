@@ -68,3 +68,25 @@ exports.updateSummaryPost = async (req, res) => {
     res.status(500).json({ success: false, message: error.message }); 
   }
 }
+
+
+exports.updatePost = async (req,res) => {
+  const postId = req.params.id;
+  const { title, content, author } = req.body;
+
+  try {
+    const updatedPost = await blogPost.findByIdAndUpdate(
+      postId,
+      { title, content, author,  },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    res.status(200).json({ success: true, post: updatedPost });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
