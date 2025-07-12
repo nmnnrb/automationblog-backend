@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const UserModel = require('./auth/UserModel')
 
 const postSchema = new mongoose.Schema({
    
@@ -23,7 +23,12 @@ const postSchema = new mongoose.Schema({
       summaryData: {
         type: String,
         required: false,
-      }
+      },
+         userId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "UserModel",
+  required: true,
+},
     
 
 });
