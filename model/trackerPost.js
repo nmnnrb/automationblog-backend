@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const UserModel = require('./auth/UserModel')
 
 const trackerPostSchema = new mongoose.Schema({
     title: {type: String,
@@ -14,6 +14,11 @@ const trackerPostSchema = new mongoose.Schema({
     date: {type: String,
             required: true,
     },
+    userId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "UserModel",
+  required: true,
+},
     dateNow: { type: Date, default: Date.now }
 })
 

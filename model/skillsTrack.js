@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const UserModel = require('./auth/UserModel')
 
 const SkillsTrackSchema = new mongoose.Schema({
     skillName: {
@@ -40,7 +41,12 @@ const SkillsTrackSchema = new mongoose.Schema({
         type: [String],
         required: true,
         default: []
-      }
+      },
+         userId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "UserModel",
+  required: true,
+},
 
     // userId: {
     //     type: mongoose.Schema.Types.ObjectId,
