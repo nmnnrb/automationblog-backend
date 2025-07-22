@@ -1,7 +1,8 @@
 const UserModel =  require('../../model/auth/UserModel')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-export const signUp = async (req, res) => {
+
+exports.signUp = async (req, res) => {
 
     const { username, email, password } = req.body;
     if(!username || !email || !password) {
@@ -30,7 +31,7 @@ export const signUp = async (req, res) => {
 }
 
 
-export const login = async (req,res) => {
+exports.login = async (req,res) => {
     const { email, password } = req.body;
 
     if(!email || !password) return res.status(400).json({success: false, message: "Credential are invalid"});
@@ -49,4 +50,9 @@ export const login = async (req,res) => {
     } catch (error) {
          res.status(500).json({ success: false, message: "failed to create account"  , error: error.message });
     }
+}
+
+
+exports.check = async (req,res) => {
+    return res.status(200).json({success: true, message: "Finally start"})
 }

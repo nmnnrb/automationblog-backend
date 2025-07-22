@@ -5,11 +5,16 @@ const cors = require("cors");
 const blogRoutes = require("./routes/blogRoutes");
 const trackerRoute = require("./routes/trackerRoute");
 const skillsRoutes = require("./routes/skillsRoutes");
+const authRoutes = require("./routes/authRoutes")
 const { OpenAI } = require("openai");
 const axios = require("axios");
+const cookieParser = require("cookie-parser");
+
 
 dotenv.config();
 const app = express();
+
+app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -36,7 +41,8 @@ app.get("/", (req, res) => {
 
 app.use("/", blogRoutes);
 app.use("/", trackerRoute);
-app.use("/" ,skillsRoutes )
+app.use("/" ,skillsRoutes );
+app.use("/" , authRoutes);
 // OpenAI ChatGPT API Integration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
