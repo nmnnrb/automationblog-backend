@@ -24,7 +24,7 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: false,
       },
-         userId: {
+    userId: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "UserModel",
   required: true,

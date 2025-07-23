@@ -6,6 +6,7 @@ const router =express.Router();
 
 router.post("/create-post", authentication ,blogController.createPost);
 router.get("/get-all-posts", authentication , blogController.getAllPosts);
+router.get("/get-my-posts", authentication , blogController.getMyPosts);
 router.get("/post/:id", authentication , blogController.getSinglePost);
 router.put("/update-summary/:id" , authentication, blogController.updateSummaryPost);
 
