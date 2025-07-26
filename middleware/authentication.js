@@ -8,6 +8,8 @@ const authentication = async (req, res, next) => {
   
      if(!token) {
         return res.status(401).json({ success: false, message: 'Authentication token is missing' });
+     }else{
+        console.log("Authentication token found:", token);
      }
      
      try {
@@ -19,7 +21,7 @@ const authentication = async (req, res, next) => {
         req.user = userValid;
         next();
      } catch (error) {
-      console.error('Authentication error:', error.message);
+      console.log('Authentication error:', error.message);
       return res.status(500).json({ success: false, message: 'Internal server error during authentication' });
     }
 }
