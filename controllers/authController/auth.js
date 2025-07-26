@@ -11,7 +11,7 @@ exports.signUp = async (req, res) => {
   }
 
   try {
-    const existing = await UserModel.findOne({ email });
+    const existing = await UserModel.findOne({ email , username });
     if (existing) {
       return res
         .status(400)
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "invalid email or password" });
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
     // localStorage.setItem("token" , token);

@@ -5,7 +5,6 @@ const cors = require("cors");
 const blogRoutes = require("./routes/blogRoutes");
 const trackerRoute = require("./routes/trackerRoute");
 const skillsRoutes = require("./routes/skillsRoutes");
-const authRoutes = require("./routes/authRoutes");
 const { OpenAI } = require("openai");
 const axios = require("axios");
 const cookieParser = require("cookie-parser");
@@ -41,10 +40,17 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
+// Auth routes (no authentication required) - import controller directly
+const authController = require("./controllers/authController/auth");
+app.post("/signup", authController.signUp);
+app.post("/login", authController.login);
+app.get("/logincheck", authController.check);
+
+// Protected routes (authentication required)
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
 app.use("/", authentication, skillsRoutes);
-app.use("/", authRoutes);
+
 // OpenAI ChatGPT API Integration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
