@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 exports.signUp = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password , profileImage } = req.body;
   if (!username || !email || !password) {
     return res
       .status(400)
@@ -22,14 +22,23 @@ exports.signUp = async (req, res) => {
       username,
       email,
       password,
+      profileImage: profileImage || "profile.jpg" 
     });
+    console.log("s1")
     await newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+    console.log("s2")
+
     res.cookie("token", token).status(201).json({
       success: true,
       message: "User created successfully",
+      user: {
+        username: newUser.username,
+        email: newUser.email,
+        profileImage: newUser.profileImage || "profile.jpg"
+      },
     });
   } catch (error) {
     res
@@ -52,6 +61,7 @@ exports.login = async (req, res) => {
 
   try {
     const user = await UserModel.findOne({ email });
+    console.log("User found:", user);
     if (!user)
       return res
         .status(400)
@@ -63,7 +73,9 @@ exports.login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "invalid email or password" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     // localStorage.setItem("token" , token);
     res
       .cookie("token", token, {
@@ -77,6 +89,11 @@ exports.login = async (req, res) => {
       .json({
         success: true,
         message: "Login successful",
+        user: {
+          username: user.username,
+          email: user.email,
+          profileImage: user.profileImage || "profile.jpg" 
+        },
       });
   } catch (error) {
     res
