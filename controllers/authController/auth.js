@@ -31,18 +31,24 @@ exports.signUp = async (req, res) => {
     });
     console.log("s2")
 
-    res.cookie("token", token).status(201).json({
-      success: true,
-        httpOnly: true,
-  secure: true,              // ✅ Required in production (HTTPS)
-  sameSite: 'None'   ,       // ✅ If frontend/backend are on different domains
-      message: "User created successfully",
-      user: {
-        username: newUser.username,
-        email: newUser.email,
-        profileImage: newUser.profileImage || "profile.jpg"
-      },
-    });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'None',
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  path: "/",
+})
+.status(201)
+.json({
+  success: true,
+  message: "User created successfully",
+  user: {
+    username: newUser.username,
+    email: newUser.email,
+    profileImage: newUser.profileImage || "profile.jpg"
+  },
+});
+
   } catch (error) {
     res
       .status(500)
@@ -80,14 +86,12 @@ exports.login = async (req, res) => {
       expiresIn: "1h",
     });
     // localStorage.setItem("token" , token);
-    res.cookie("token", token, {
-    httpOnly: true,
-  secure: true,              // ✅ Required in production (HTTPS)
-  sameSite: 'None',
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-        path: "/", // Optional: cookie is valid across all paths
-      })
-      .status(200)
+  res.cookie('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'none',
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+}).status(200)
       .json({
         success: true,
         message: "Login successful",
