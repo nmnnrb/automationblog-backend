@@ -33,6 +33,9 @@ exports.signUp = async (req, res) => {
 
     res.cookie("token", token).status(201).json({
       success: true,
+        httpOnly: true,
+  secure: true,              // ✅ Required in production (HTTPS)
+  sameSite: 'None'   ,       // ✅ If frontend/backend are on different domains
       message: "User created successfully",
       user: {
         username: newUser.username,
@@ -77,11 +80,10 @@ exports.login = async (req, res) => {
       expiresIn: "1h",
     });
     // localStorage.setItem("token" , token);
-    res
-      .cookie("token", token, {
-        httpOnly: true, // Prevents JavaScript access (for security)
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "Lax", // Controls cross-site behavior (Lax is usually safe)
+    res.cookie("token", token, {
+    httpOnly: true,
+  secure: true,              // ✅ Required in production (HTTPS)
+  sameSite: 'None',
         maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
         path: "/", // Optional: cookie is valid across all paths
       })
