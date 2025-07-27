@@ -29,14 +29,15 @@ exports.signUp = async (req, res) => {
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    console.log("s2")
-
+    console.log("s2") 
+  console.log("token", token)
+console.log("Cookie headers:", req.headers);
 res.cookie("token", token, {
   httpOnly: true,
   secure: true,
-  sameSite: 'None',
+  sameSite: 'none',
   maxAge: 24 * 60 * 60 * 1000, // 1 day
-  path: "/",
+  // path: "/",
 })
 .status(201)
 .json({
@@ -88,7 +89,7 @@ exports.login = async (req, res) => {
     // localStorage.setItem("token" , token);
   res.cookie('token', token, {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure:true,
   sameSite: 'none',
   maxAge: 24 * 60 * 60 * 1000, // 1 day
 }).status(200)
