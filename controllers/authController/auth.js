@@ -32,10 +32,13 @@ exports.signUp = async (req, res) => {
     console.log("s2") 
   console.log("token", token)
 console.log("Cookie headers:", req.headers);
+console.log("Frontend URL from env:", process.env.FORNTEND_URL);
+const isHttps = process.env.FORNTEND_URL?.startsWith('https') || false;
+console.log("Is HTTPS:", isHttps);
 res.cookie("token", token, {
   httpOnly: true,
-  secure: true,
-  sameSite: 'none',
+  secure: isHttps,  // Only secure for HTTPS
+  sameSite: isHttps ? 'none' : 'lax',  // none for HTTPS, lax for HTTP
   maxAge: 24 * 60 * 60 * 1000, // 1 day
   // path: "/",
 })
@@ -86,11 +89,14 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+    console.log("Login token generated:", token);
     // localStorage.setItem("token" , token);
+  const isHttps = process.env.FORNTEND_URL?.startsWith('https') || false;
+  console.log("Login - Is HTTPS:", isHttps);
   res.cookie('token', token, {
   httpOnly: true,
-  secure:true,
-  sameSite: 'none',
+  secure: isHttps,  // Only secure for HTTPS
+  sameSite: isHttps ? 'none' : 'lax',  // none for HTTPS, lax for HTTP
   maxAge: 24 * 60 * 60 * 1000, // 1 day
 }).status(200)
       .json({
