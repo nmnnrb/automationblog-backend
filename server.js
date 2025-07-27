@@ -13,6 +13,7 @@ const authentication = require("./middleware/authentication");
 dotenv.config();
 const app = express();
 const frontendUrl = process.env.FORNTEND_URL || "http://localhost:3000";
+console.log("Frontend URL:", frontendUrl);
 app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
