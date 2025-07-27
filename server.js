@@ -21,7 +21,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.FORNTEND_URL,
+    origin: "https://automation-blog.vercel.app",
     credentials: true,
   })
 );
