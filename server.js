@@ -38,7 +38,8 @@ mongoose
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("Hello, World! Login to access the API.");
+res.send(`Hello, World! Login to access the API. Frontend: ${frontendUrl}`);
+
 });
 
 // Auth routes (no authentication required) - import controller directly
