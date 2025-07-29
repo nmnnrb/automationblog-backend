@@ -1,3 +1,4 @@
+
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -47,9 +48,23 @@ const authController = require("./controllers/authController/auth");
 app.post("/signup", authController.signUp);
 app.post("/login", authController.login);
 app.get("/logincheck", authController.check);
+// ...existing code...
+// Logout route: clears cookies and instructs client to clear localStorage
+app.post("/logout", (req, res) => {
+  // Clear all cookies
+  if (req.cookies) {
+    Object.keys(req.cookies).forEach((cookieName) => {
+      res.clearCookie(cookieName, { path: "/" });
+    });
+  }
+  // Instruct client to clear localStorage
+  res.json({
+    success: true,
+    message: "Logged out. Please clear localStorage on the client side."
+  });
+});
 
-
-
+app.get("/verify-user", authentication);
 // Protected routes (authentication required)
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
