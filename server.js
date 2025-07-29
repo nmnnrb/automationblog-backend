@@ -77,13 +77,6 @@ const openai = new OpenAI({
 app.post("/gpt", authentication, async (req, res) => {
   try {
     const { message } = req.body;
-    const userId = req.user?.id || req.user?._id;
-
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User ID is missing" });
-    }
 
     if (!message || typeof message !== "string") {
       return res.status(400).json({
@@ -93,26 +86,34 @@ app.post("/gpt", authentication, async (req, res) => {
     }
 
     const response = await axios.post(
-      "https://router.huggingface.co/novita/v3/openai/chat/completions",
-      {
-        messages: [{ role: "user", content: message }],
-        model: "deepseek/deepseek-v3-0324",
-        stream: false,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+      ,{
+          "contents" : [
+            {
+              "parts" : [
+                {
+                  "text" : message
+                }
+              ]
+            }
+          ]
         },
+        {
+        headers: {
+          "Content-Type": "application/json",
+          "X-goog-api-key": process.env.GEMENI_API_KEY,
+        }
       }
     );
 
-    const reply = response?.data?.choices?.[0]?.message?.content;
+    // const reply = response;
+    const reply = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
 
     if (!reply) {
       return res
         .status(500)
-        .json({ error: "No valid reply from Hugging Face" });
+        .json({ error: "No valid reply from AI" });
     }
 
     res.json({ response: reply });
