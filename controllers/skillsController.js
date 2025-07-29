@@ -1,56 +1,74 @@
-const skillsTrack = require('../model/skillsTrack');
+const skillsTrack = require("../model/skillsTrack");
 
-
-
-exports.createSkill = async (req,res) => {
-     const userId = req.user?.id || req.user?._id;
-     console.log("User ID:", userId);
+exports.createSkill = async (req, res) => {
+  const userId = req.user?.id || req.user?._id;
+  console.log("User ID:", userId);
   console.log("Request body:", req.body);
   if (!userId) {
-    return res.status(400).json({ success: false, message: "User ID is missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is missing" });
   }
-  if (!req.body || !req.body.skillName || !req.body.basicQuestion || !req.body.mediumQuestion || !req.body.hardQuestion) {
-    return res.status(400).json({ success: false, message: "All fields are required" });
+  if (
+    !req.body ||
+    !req.body.skillName ||
+    !req.body.basicQuestion ||
+    !req.body.mediumQuestion ||
+    !req.body.hardQuestion ||
+    !Array.isArray(req.body.roadmap)
+  ) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "All fields are required (including roadmap as array)",
+      });
   }
-  const {skillName, basicQuestion, mediumQuestion , hardQuestion} = req.body;
-    const response = await skillsTrack.findOne({skillName: skillName});
+  const { skillName, basicQuestion, mediumQuestion, hardQuestion, roadmap } = req.body;
+  const response = await skillsTrack.findOne({ skillName: skillName });
 
-    if(response) {
-      console.log("Skill already exists:", skillName);
-      return res.status(400).json({ success: false, message: 'Skill already exists' });
-    }
+  if (response) {
+    console.log("Skill already exists:", skillName);
+    return res
+      .status(400)
+      .json({ success: false, message: "Skill already exists" });
+  }
   try {
+    const checkedRoadmap = Array(roadmap.length).fill(false);
     const newSkill = new skillsTrack({
       skillName,
       basicQuestion,
       mediumQuestion,
       hardQuestion,
-      userId
+      roadmap,
+      checkedRoadmap,
+      userId,
     });
-    
+
     await newSkill.save();
     res.status(201).json({ success: true, skill: newSkill });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
-  } 
-}
+  }
+};
 
 exports.getAllSkills = async (req, res) => {
-   const userId = req.user?.id || req.user?._id;
+  const userId = req.user?.id || req.user?._id;
   if (!userId) {
-    return res.status(400).json({ success: false, message: "User ID is missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is missing" });
   }
-try {
+  try {
     const skills = await skillsTrack.find({ userId }).sort({ lastUpdated: -1 });
     res.status(200).json({ success: true, skills });
-} catch (error) {
+  } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
-}
-
+};
 
 // exports.checkBox = async (req, res) => {
-  
+
 //    const userId = req.user?.id || req.user?._id;
 //   if (!userId) {
 //     return res.status(400).json({ success: false, message: "User ID is missing" });
@@ -120,15 +138,27 @@ exports.checkBox = async (req, res) => {
 
   const { skillName, questionType, questionIndex, checked } = req.body;
 
-  if (!skillName || !questionType || questionIndex === undefined || checked === undefined) {
+  if (
+    !skillName ||
+    !questionType ||
+    questionIndex === undefined ||
+    checked === undefined
+  ) {
     return res.status(400).json({
       success: false,
       message: "All fields are required",
     });
   }
 
-  const questionArrayName = `${questionType}Question`;
-  const checkedArrayName = `checked${questionType.charAt(0).toUpperCase()}${questionType.slice(1)}Questions`;
+  // Support for roadmap questions (now array of objects)
+  let questionArrayName, checkedArrayName;
+  if (questionType === "roadmap") {
+    questionArrayName = "roadmap";
+    checkedArrayName = "checkedRoadmap";
+  } else {
+    questionArrayName = `${questionType}Question`;
+    checkedArrayName = `checked${questionType.charAt(0).toUpperCase()}${questionType.slice(1)}Questions`;
+  }
 
   try {
     const skill = await skillsTrack.findOne({ skillName, userId });
@@ -161,7 +191,18 @@ exports.checkBox = async (req, res) => {
     const mediumScore = (skill.checkedMediumQuestions || []).filter(Boolean).length * 3;
     const hardScore = (skill.checkedHardQuestions || []).filter(Boolean).length * 5;
 
-    skill.score = basicScore + mediumScore + hardScore;
+    // For roadmap, sum marks of checked items
+    let roadmapScore = 0;
+    if (Array.isArray(skill.roadmap) && Array.isArray(skill.checkedRoadmap)) {
+      roadmapScore = skill.roadmap.reduce((sum, item, idx) => {
+        if (skill.checkedRoadmap[idx] && item && typeof item.marks === 'number') {
+          return sum + item.marks;
+        }
+        return sum;
+      }, 0);
+    }
+
+    skill.score = basicScore + mediumScore + hardScore + roadmapScore;
     skill.lastUpdated = Date.now();
 
     await skill.save();
@@ -181,42 +222,47 @@ exports.checkBox = async (req, res) => {
   }
 };
 
-
-
-
-exports.score = async (req,res) => {
-   const userId = req.user?.id || req.user?._id;
+exports.score = async (req, res) => {
+  const userId = req.user?.id || req.user?._id;
   if (!userId) {
-    return res.status(400).json({ success: false, message: "User ID is missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is missing" });
   }
 
   const { skillName } = req.params;
 
   try {
-    const response = await skillsTrack.findOne({ skillName: skillName , userId: userId });
+    const response = await skillsTrack.findOne({
+      skillName: skillName,
+      userId: userId,
+    });
     if (!response) {
-      return res.status(404).json({ success: false, message: 'Skill not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Skill not found" });
     }
     console.log("Score fetched successfully");
     res.status(200).json({ success: true, score: response.score });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
-}
-
-
-
+};
 
 exports.points = async (req, res) => {
   const { skillName, points } = req.body;
   const userId = req.user?.id || req.user?._id;
   if (!userId) {
-    return res.status(400).json({ success: false, message: "User ID is missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is missing" });
   }
   try {
     const skill = await skillsTrack.findOne({ skillName, userId });
     if (!skill) {
-      return res.status(404).json({ success: false, message: 'Skill not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Skill not found" });
     }
 
     // Safely add points

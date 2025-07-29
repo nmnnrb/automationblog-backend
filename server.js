@@ -77,22 +77,40 @@ app.post("/gpt", authentication, async (req, res) => {
         });
     }
 
-    const response = await axios.post(
-      "https://router.huggingface.co/novita/v3/openai/chat/completions",
-      {
-        messages: [{ role: "user", content: message }],
-        model: "deepseek/deepseek-v3-0324",
-        stream: false,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+    // const response = await axios.post(
+    //   "https://router.huggingface.co/novita/v3/openai/chat/completions",
+    //   {
+    //     messages: [{ role: "user", content: message }],
+    //     model: "deepseek/deepseek-v3-0324",
+    //     stream: false,
+    //   },
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${process.env.HF_API_KEY}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
+     console.log("api key " , process.env.GEMENI_API_KEY);
+     const response = await axios.post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent", {
+          contents: [ 
+            {
+              "parts": [
+                {
+                  text: message
+                }
+              ]
+            }
+          ]
+     },{
+      headers: {
+        "Content-Type": "application/json",
+        "X-goog-api-key": `${process.env.GEMENI_API_KEY}`,
       }
-    );
-
-    const reply = response?.data?.choices?.[0]?.message?.content;
+     })
+     // const reply = response?.data?.choices?.[0]?.message?.content;
+     const reply = response?.data.candidates[0].content.parts[0].text
+     console.log("Response form Gemeni API:", response.data);
 
     if (!reply) {
       return res
@@ -103,10 +121,10 @@ app.post("/gpt", authentication, async (req, res) => {
     res.json({ response: reply });
   } catch (error) {
     console.error(
-      "Error from Hugging Face:",
+      "Error in GPT request:",
       error.response?.data || error.message
     );
-    res.status(500).json({ error: "Hugging Face API error" });
+    res.status(500).json({ error: "Gemini API error", error: error.message });
   }
 });
 

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 exports.signUp = async (req, res) => {
-  const { username, email, password , profileImage } = req.body;
+  const { username, email, password, profileImage } = req.body;
   if (!username || !email || !password) {
     return res
       .status(400)
@@ -11,7 +11,7 @@ exports.signUp = async (req, res) => {
   }
 
   try {
-    const existing = await UserModel.findOne({ email , username });
+    const existing = await UserModel.findOne({ email, username });
     if (existing) {
       return res
         .status(400)
@@ -22,45 +22,43 @@ exports.signUp = async (req, res) => {
       username,
       email,
       password,
-      profileImage: profileImage || "profile.jpg" 
+      profileImage: profileImage || "profile.jpg",
     });
-    console.log("s1")
+    console.log("s1");
     await newUser.save();
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    console.log("s2") 
-  console.log("token", token)
-console.log("Cookie headers:", req.headers);
-console.log("Frontend URL from env:", process.env.FORNTEND_URL);
-const isHttps = process.env.FORNTEND_URL?.startsWith('https') || false;
-console.log("Is HTTPS:", isHttps);
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: isHttps,  // Only secure for HTTPS
-  sameSite: isHttps ? 'none' : 'lax',  // none for HTTPS, lax for HTTP
-  maxAge: 24 * 60 * 60 * 1000, // 1 day
-  // path: "/",
-})
-.status(201)
-.json({
-  success: true,
-  message: "User created successfully",
-  user: {
-    username: newUser.username,
-    email: newUser.email,
-    profileImage: newUser.profileImage || "profile.jpg"
-  },
-});
-
-  } catch (error) {
+    console.log("s2");
+    console.log("token", token);
+    console.log("Cookie headers:", req.headers);
+    console.log("Frontend URL from env:", process.env.FORNTEND_URL);
+    const isHttps = process.env.FORNTEND_URL?.startsWith("https") || false;
+    console.log("Is HTTPS:", isHttps);
     res
-      .status(500)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: isHttps, // Only secure for HTTPS
+        sameSite: isHttps ? "none" : "lax", // none for HTTPS, lax for HTTP
+        maxAge: 60 * 60 * 1000, // 1 hour
+        // path: "/",
+      })
+      .status(201)
       .json({
-        success: false,
-        message: "failed to create account",
-        error: error.message,
+        success: true,
+        message: "User created successfully",
+        user: {
+          username: newUser.username,
+          email: newUser.email,
+          profileImage: newUser.profileImage || "profile.jpg",
+        },
       });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "failed to create account",
+      error: error.message,
+    });
   }
 };
 
@@ -91,31 +89,31 @@ exports.login = async (req, res) => {
     });
     console.log("Login token generated:", token);
     // localStorage.setItem("token" , token);
-  const isHttps = process.env.FORNTEND_URL?.startsWith('https') || false;
-  console.log("Login - Is HTTPS:", isHttps);
-  res.cookie('token', token, {
-  httpOnly: true,
-  secure: isHttps,  // Only secure for HTTPS
-  sameSite: isHttps ? 'none' : 'lax',  // none for HTTPS, lax for HTTP
-  maxAge: 24 * 60 * 60 * 1000, // 1 day
-}).status(200)
+    const isHttps = process.env.FORNTEND_URL?.startsWith("https") || false;
+    console.log("Login - Is HTTPS:", isHttps);
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: isHttps, // Only secure for HTTPS
+        sameSite: isHttps ? "none" : "lax", // none for HTTPS, lax for HTTP
+        maxAge: 60 * 60 * 1000, // 1 hour
+      })
+      .status(200)
       .json({
         success: true,
         message: "Login successful",
         user: {
           username: user.username,
           email: user.email,
-          profileImage: user.profileImage || "profile.jpg" 
+          profileImage: user.profileImage || "profile.jpg",
         },
       });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "failed to Login",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "failed to Login",
+      error: error.message,
+    });
   }
 };
 
