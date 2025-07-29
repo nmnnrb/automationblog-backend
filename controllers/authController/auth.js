@@ -118,5 +118,57 @@ exports.login = async (req, res) => {
 };
 
 exports.check = async (req, res) => {
-  return res.status(200).json({ success: true, message: "Finally start" });
+  try {
+    // Get token from cookie
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "No token provided. Please login.",
+          redirect: "/login",
+        });
+    }
+
+    // Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Invalid or expired token. Please login again.",
+          redirect: "/login",
+        });
+    }
+
+    // Find user in DB
+    const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "User not found. Please login.",
+          redirect: "/login",
+        });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User authenticated",
+      user: {
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage || "profile.jpg",
+      },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
 };
