@@ -1,58 +1,64 @@
-const mongoose = require('mongoose');
-const UserModel = require('./auth/UserModel')
+const mongoose = require("mongoose");
+const UserModel = require("./auth/UserModel");
 
 const SkillsTrackSchema = new mongoose.Schema({
-    skillName: {
-        type: String,
-        required: true,
-        trim: true
+  skillName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  basicQuestion: {
+    type: [String],
+    required: true,
+    default: [],
+  },
+  checkedBasicQuestions: { type: [Boolean], default: [] },
+
+  mediumQuestion: {
+    type: [String],
+    required: true,
+    default: [],
+  },
+  checkedMediumQuestions: { type: [Boolean], default: [] },
+
+  hardQuestion: {
+    type: [String],
+    required: true,
+    default: [],
+  },
+  checkedHardQuestions: { type: [Boolean], default: [] },
+
+  lastUpdated: {
+    type: Date,
+    default: Date.now,
+  },
+
+  roadmap: [
+    {
+      question: String,
+      answer: String,
+      marks: Number,
     },
-    basicQuestion: {
-        type: [String],
-        required: true,
-        default: [] 
-    },
-     checkedBasicQuestions: { type: [Boolean], default: [] },
+  ],
+  checkedRoadmap: { type: [Boolean], default: [] },
+  score: { type: Number, default: 0 },
 
-    mediumQuestion: {
-        type: [String],
-        required: true,
-        default: [] 
-    },
-      checkedMediumQuestions: { type: [Boolean], default: [] },
+  practicalWork: {
+    type: [String],
+    required: true,
+    default: [],
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserModel",
+    required: true,
+  },
 
+  // userId: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: 'User',
+  //     required: true
+  // }
+});
 
-    hardQuestion: {
-        type: [String],
-        required: true,
-        default: [] 
-    },
-      checkedHardQuestions: { type: [Boolean], default: [] },
-
-
-    lastUpdated: { 
-        type: Date, 
-        default: Date.now 
-    } ,
-
-      score: { type: Number, default: 0 },
-
-      practicalWork: {
-        type: [String],
-        required: true,
-        default: []
-      },
-         userId: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "UserModel",
-  required: true,
-},
-
-    // userId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User',
-    //     required: true
-    // }
-})
-
-module.exports = mongoose.model('SkillsTrack' , SkillsTrackSchema);
+module.exports = mongoose.model("SkillsTrack", SkillsTrackSchema);

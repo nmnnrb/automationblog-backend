@@ -41,16 +41,21 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
+
 // Auth routes (no authentication required) - import controller directly
 const authController = require("./controllers/authController/auth");
 app.post("/signup", authController.signUp);
 app.post("/login", authController.login);
 app.get("/logincheck", authController.check);
 
+
+
 // Protected routes (authentication required)
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
 app.use("/", authentication, skillsRoutes);
+
+
 
 // OpenAI ChatGPT API Integration
 const openai = new OpenAI({
