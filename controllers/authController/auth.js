@@ -38,10 +38,10 @@ exports.signUp = async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: isHttps, // Only secure for HTTPS
-        sameSite: isHttps ? "none" : "lax", // none for HTTPS, lax for HTTP
+        secure: true, // Only secure for HTTPS
+        sameSite: "none", // none for HTTPS, lax for HTTP
         maxAge: 60 * 60 * 1000, // 1 hour
-        // path: "/",
+        path: "/",
       })
       .status(201)
       .json({
@@ -94,9 +94,10 @@ exports.login = async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: isHttps, // Only secure for HTTPS
-        sameSite: isHttps ? "none" : "lax", // none for HTTPS, lax for HTTP
+        secure: true, // Only secure for HTTPS
+        sameSite: "none", // none for HTTPS, lax for HTTP
         maxAge: 60 * 60 * 1000, // 1 hour
+        path: "/",
       })
       .status(200)
       .json({
@@ -122,13 +123,11 @@ exports.check = async (req, res) => {
     // Get token from cookie
     const token = req.cookies.token;
     if (!token) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "No token provided. Please login.",
-          redirect: "/login",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "No token provided. Please login.",
+        redirect: "/login",
+      });
     }
 
     // Verify token
@@ -136,25 +135,21 @@ exports.check = async (req, res) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Invalid or expired token. Please login again.",
-          redirect: "/login",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token. Please login again.",
+        redirect: "/login",
+      });
     }
 
     // Find user in DB
     const user = await UserModel.findById(decoded.id);
     if (!user) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "User not found. Please login.",
-          redirect: "/login",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "User not found. Please login.",
+        redirect: "/login",
+      });
     }
 
     return res.status(200).json({

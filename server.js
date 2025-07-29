@@ -1,4 +1,3 @@
-
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -39,9 +38,8 @@ mongoose
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("Hello, World! Login to access the API.");
 });
-
 
 // Auth routes (no authentication required) - import controller directly
 const authController = require("./controllers/authController/auth");
@@ -60,7 +58,7 @@ app.post("/logout", (req, res) => {
   // Instruct client to clear localStorage
   res.json({
     success: true,
-    message: "Logged out. Please clear localStorage on the client side."
+    message: "Logged out. Please clear localStorage on the client side.",
   });
 });
 
@@ -69,8 +67,6 @@ app.get("/verify-user", authentication);
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
 app.use("/", authentication, skillsRoutes);
-
-
 
 // OpenAI ChatGPT API Integration
 const openai = new OpenAI({
@@ -89,12 +85,10 @@ app.post("/gpt", authentication, async (req, res) => {
     }
 
     if (!message || typeof message !== "string") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Message is required and must be a string",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Message is required and must be a string",
+      });
     }
 
     const response = await axios.post(
@@ -130,18 +124,17 @@ app.post("/gpt", authentication, async (req, res) => {
   }
 });
 
-app.get("/is-admin" , authentication, (req, res) => {
+app.get("/is-admin", authentication, (req, res) => {
   const userId = req.user?.id || req.user?._id;
 
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User ID is missing" });
-    }
+  if (!userId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is missing" });
+  }
 
-  res.json({ success: true , isAdmin: req.user._id  });
+  res.json({ success: true, isAdmin: req.user._id });
 });
-
 
 // Start Server
 app.listen(port, () => {
