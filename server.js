@@ -38,8 +38,7 @@ mongoose
 
 // Routes
 app.get("/", (req, res) => {
-res.send(`Hello, World! Login to access the API. Frontend: ${frontendUrl}`);
-
+  res.send(`Hello, World! Login to access the API. Frontend: ${frontendUrl}`);
 });
 
 // Auth routes (no authentication required) - import controller directly
@@ -50,16 +49,15 @@ app.get("/logincheck", authController.check);
 // ...existing code...
 // Logout route: clears cookies and instructs client to clear localStorage
 app.post("/logout", (req, res) => {
-  // Clear all cookies
-  if (req.cookies) {
-    Object.keys(req.cookies).forEach((cookieName) => {
-      res.clearCookie(cookieName, { path: "/" });
-    });
-  }
-  // Instruct client to clear localStorage
+  res.clearCookie("token", {
+    path: "/",
+    secure: true, // must match login cookie
+    httpOnly: true, // optional here but good practice
+    sameSite: "none", // must match login cookie
+  });
   res.json({
     success: true,
-    message: "Logged out. Please clear localStorage on the client side.",
+    message: "Logged out successfully",
   });
 });
 
@@ -86,34 +84,31 @@ app.post("/gpt", authentication, async (req, res) => {
     }
 
     const response = await axios.post(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-      ,{
-          "contents" : [
-            {
-              "parts" : [
-                {
-                  "text" : message
-                }
-              ]
-            }
-          ]
-        },
-        {
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+      {
+        contents: [
+          {
+            parts: [
+              {
+                text: message,
+              },
+            ],
+          },
+        ],
+      },
+      {
         headers: {
           "Content-Type": "application/json",
           "X-goog-api-key": process.env.GEMENI_API_KEY,
-        }
+        },
       }
     );
 
     // const reply = response;
     const reply = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-
     if (!reply) {
-      return res
-        .status(500)
-        .json({ error: "No valid reply from AI" });
+      return res.status(500).json({ error: "No valid reply from AI" });
     }
 
     res.json({ response: reply });
