@@ -39,7 +39,7 @@ mongoose
 // Routes
 app.get("/", (req, res) => {
   res.send(
-    `Hello, World! Login to access the API. Frontend: ${frontendUrl} <-- this is new login routes conntected with same frontend url`
+    `Hello, World! Login to access the API. Frontend: ----> ${frontendUrl} <-- this is new login routes conntected with same frontend url`
   );
 });
 
@@ -63,7 +63,12 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get("/verify-user", authentication);
+app.get("/verify-user", authentication , (req,res) => {
+  return res.status(200).json({
+    success: true,
+    message: "User is authenticated"
+  });
+});
 // Protected routes (authentication required)
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
