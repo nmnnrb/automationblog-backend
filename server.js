@@ -48,6 +48,8 @@ const authController = require("./controllers/authController/auth");
 app.post("/signup", authController.signUp);
 app.post("/login", authController.login);
 app.get("/logincheck", authController.check);
+const googleAuthController = require("./controllers/authController/googleAuth");
+app.post("/google-login", googleAuthController.googleLogin);
 // ...existing code...
 // Logout route: clears cookies and instructs client to clear localStorage
 app.post("/logout", (req, res) => {
