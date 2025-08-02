@@ -38,7 +38,9 @@ mongoose
 
 // Routes
 app.get("/", (req, res) => {
-  res.send(`Hello, World! Login to access the API. Frontend: ${frontendUrl}`);
+  res.send(
+    `Hello, World! Login to access the API. Frontend: ----> ${frontendUrl} <-- this is new login routes conntected with same frontend url`
+  );
 });
 
 // Auth routes (no authentication required) - import controller directly
@@ -46,6 +48,8 @@ const authController = require("./controllers/authController/auth");
 app.post("/signup", authController.signUp);
 app.post("/login", authController.login);
 app.get("/logincheck", authController.check);
+const googleAuthController = require("./controllers/authController/googleAuth");
+app.post("/google-login", googleAuthController.googleLogin);
 // ...existing code...
 // Logout route: clears cookies and instructs client to clear localStorage
 app.post("/logout", (req, res) => {
@@ -61,7 +65,12 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get("/verify-user", authentication);
+app.get("/verify-user", authentication , (req,res) => {
+  return res.status(200).json({
+    success: true,
+    message: "User is authenticated"
+  });
+});
 // Protected routes (authentication required)
 app.use("/", authentication, blogRoutes);
 app.use("/", authentication, trackerRoute);
