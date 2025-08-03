@@ -25,7 +25,7 @@ exports.createSkill = async (req, res) => {
       });
   }
   const { skillName, basicQuestion, mediumQuestion, hardQuestion, roadmap } = req.body;
-  const response = await skillsTrack.findOne({ skillName: skillName });
+  const response = await skillsTrack.findOne({ skillName: skillName , userId: userId });
 
   if (response) {
     console.log("Skill already exists:", skillName);
