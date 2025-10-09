@@ -38,9 +38,121 @@ mongoose
 
 // Routes
 app.get("/", (req, res) => {
-  res.send(
-    `Hello, World! Login to access the API. Frontend: ----> ${frontendUrl} <-- this is new login routes conntected with same frontend url`
-  );
+  res.send(`<!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Automation Blog API</title>
+      <style>
+        :root {
+          --bg: #0b1020;
+          --card: #121633;
+          --muted: #a1acba;
+          --text: #eef0f7;
+          --accent: #ff7ac6;   /* pink */
+          --accent-2: #7dd3fc; /* sky */
+          --border: #23284a;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+          margin: 0;
+          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+          background:
+            radial-gradient(1200px 700px at -10% -20%, rgba(255,122,198,0.22), transparent 60%),
+            radial-gradient(1000px 600px at 110% -10%, rgba(125,211,252,0.18), transparent 60%),
+            var(--bg);
+          color: var(--text);
+          display: grid;
+          place-items: center;
+        }
+        .container {
+          width: min(720px, calc(100% - 32px));
+          margin: 56px auto;
+        }
+        .card {
+          background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 14px 44px rgba(0,0,0,0.5);
+          backdrop-filter: blur(10px);
+        }
+        .header {
+          padding: 30px 30px 18px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .logo {
+          width: 46px; height: 46px; border-radius: 12px;
+          display: grid; place-items: center;
+          background: linear-gradient(135deg, var(--accent), var(--accent-2));
+          color: white; font-weight: 800;
+          letter-spacing: 0.5px;
+          box-shadow: 0 10px 26px rgba(124,108,255,0.35);
+          transition: transform .15s ease;
+        }
+        .logo:hover { transform: rotate(3deg) scale(1.03); }
+  h1 { margin: 0; font-size: 1.5rem; letter-spacing: 0.3px; }
+  .sub { color: var(--muted); font-size: 0.95rem; }
+        .body { padding: 28px; display: grid; gap: 24px; }
+  .intro { color: var(--muted); line-height: 1.6; font-size: 0.98rem; }
+  .intro p { margin: 0 0 10px; }
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .tile {
+          border: 1px solid var(--border);
+          background: rgba(255,255,255,0.03);
+          border-radius: 14px;
+          padding: 18px;
+        }
+        .k {
+          font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+        }
+  .v { font-size: 1rem; margin-top: 8px; }
+        a.btn {
+          display: inline-flex; align-items: center; gap: 10px;
+          padding: 12px 18px;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.15);
+          color: var(--text);
+          text-decoration: none; font-weight: 700; font-size: 1rem;
+          transition: transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+          background: rgba(255,255,255,0.03);
+        }
+        a.btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.06); }
+  .primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; border-color: transparent; box-shadow: 0 10px 24px rgba(255,122,198,0.35); }
+  .primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(125,211,252,0.45); }
+      </style>
+    </head>
+    <body>
+      <main class="container">
+        <section class="card">
+          <div class="header">
+            <div class="logo">AB</div>
+            <div>
+              <h1>Automation Blog API</h1>
+              <div class="sub">Backend is online. This instance uses a free server and may take a moment to wake up.</div>
+            </div>
+          </div>
+          <div class="body">
+            <div class="intro">
+              <p>Thanks for your patience! Because we’re using a free-tier server, you might occasionally notice a brief warm-up period. We’ve set up this landing page to confirm the backend is healthy and properly linked to your frontend.</p>
+              <p>Good news — both backend and frontend are running. You can open the website using the button below.</p>
+            </div>
+            <div class="grid">
+              <div class="tile">
+                <div class="k">Frontend URL</div>
+                <div class="v"><a class="btn primary" href="${frontendUrl}" target="_blank" rel="noopener noreferrer">Open Frontend</a></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </body>
+  </html>`);
 });
 
 // Auth routes (no authentication required) - import controller directly
